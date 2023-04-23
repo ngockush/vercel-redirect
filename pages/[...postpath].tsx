@@ -25,7 +25,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	}
 	const query = gql`
 		{
-			post(id: "/${path}/", idType: URI) {
+			post(id: "/${path}/", idType: "URI") {
 				id
 				excerpt
 				title
@@ -34,21 +34,18 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 				modifiedGmt
 				content
 				author {
-					node {
-						name
-					}
+					name
 				}
 				featuredImage {
-					node {
-						sourceUrl
-						altText
-					}
+					sourceUrl
+					altText
 				}
 			}
 		}
 	`;
 
 	const data = await graphQLClient.request(query);
+	console.log(data);
 	if (!data.post) {
 		return {
 			notFound: true,
@@ -91,18 +88,18 @@ const Post: React.FC<PostProps> = (props) => {
 				<meta property="og:site_name" content={host.split('.')[0]} />
 				<meta property="article:published_time" content={post.dateGmt} />
 				<meta property="article:modified_time" content={post.modifiedGmt} />
-				<meta property="og:image" content={post.featuredImage.node.sourceUrl} />
+				<meta property="og:image" content={post.featuredImage.sourceUrl} />
 				<meta
 					property="og:image:alt"
-					content={post.featuredImage.node.altText || post.title}
+					content={post.featuredImage.altText || post.title}
 				/>
 				<title>{post.title}</title>
 			</Head>
 			<div className="post-container">
 				<h1>{post.title}</h1>
 				<img
-					src={post.featuredImage.node.sourceUrl}
-					alt={post.featuredImage.node.altText || post.title}
+					src={post.featuredImage.sourceUrl}
+					alt={post.featuredImage.altText || post.title}
 				/>
 				<article dangerouslySetInnerHTML={{ __html: post.content }} />
 			</div>
